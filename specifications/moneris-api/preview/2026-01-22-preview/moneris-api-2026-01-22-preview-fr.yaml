@@ -11,7 +11,7 @@ info:
   termsOfService: https://www.moneris.com/fr-ca/juridiques/conditions-utilisation
   contact:
     url: https://api-developer.moneris.com
-    email: UnifiedAPI@moneris.com
+    email: api@moneris.com
   license:
     name: Moneris
     url: https://developer.moneris.com/Agreements/Terms%20of%20Use
@@ -13151,6 +13151,14 @@ components:
       minimum: 0
       maximum: 100
       example: 90.5
+    highPrecisionPercentage:
+      allOf:
+        - $ref: '#/components/schemas/percentage'
+      description: Une valeur de pourcentage prenant en charge jusqu’à 5 décimales, offrant une précision supérieure au pourcentage standard pour le calcul des frais basés sur un taux.
+    highPrecisionAmount:
+      allOf:
+        - $ref: '#/components/schemas/percentage'
+      description: Un montant monétaire prenant en charge jusqu’à 6 décimales, offrant une précision supérieure au pourcentage standard pour le calcul des montants de frais.
     transactionPlanTier:
       type: string
       description: Le niveau ou la bande dans le plan de transaction.
@@ -13242,13 +13250,13 @@ components:
       description: Un objet contenant les détails du plan de transaction.
       properties:
         merchantDiscountRate:
-          $ref: '#/components/schemas/percentage'
+          $ref: '#/components/schemas/highPrecisionPercentage'
         minimumMerchantDiscountRate:
-          $ref: '#/components/schemas/percentage'
+          $ref: '#/components/schemas/highPrecisionPercentage'
         maximumMerchantDiscountRate:
-          $ref: '#/components/schemas/percentage'
+          $ref: '#/components/schemas/highPrecisionPercentage'
         transactionRate:
-          $ref: '#/components/schemas/percentage'
+          $ref: '#/components/schemas/highPrecisionAmount'
         minimumTransactionValue:
           description: La valeur de transaction minimale qui s'applique dans le cadre du plan de transaction.
           nullable: true
@@ -13280,7 +13288,7 @@ components:
             amount: 16000
             currency: CAD
         disqualifiedTransactionMerchantDiscountRate:
-          $ref: '#/components/schemas/percentage'
+          $ref: '#/components/schemas/highPrecisionPercentage'
         transactionPlanTier:
           $ref: '#/components/schemas/transactionPlanTier'
         feeTypeCode:
@@ -13288,9 +13296,9 @@ components:
         paymentModeCode:
           $ref: '#/components/schemas/paymentModeCode'
         minimumDisqualifiedTransactionMerchantDiscountRate:
-          $ref: '#/components/schemas/percentage'
+          $ref: '#/components/schemas/highPrecisionPercentage'
         maximumDisqualifiedTransactionMerchantDiscountRate:
-          $ref: '#/components/schemas/percentage'
+          $ref: '#/components/schemas/highPrecisionPercentage'
     transactionPlans:
       type: array
       description: Une liste d'éléments de transaction.
@@ -13398,9 +13406,9 @@ components:
       description: Un objet contenant tous les détails relatifs au plan d'évaluation.
       properties:
         merchantDiscountRate:
-          $ref: '#/components/schemas/percentage'
+          $ref: '#/components/schemas/highPrecisionPercentage'
         transactionRate:
-          $ref: '#/components/schemas/percentage'
+          $ref: '#/components/schemas/highPrecisionAmount'
         feeTypeCode:
           $ref: '#/components/schemas/feeTypeCode'
         cardOriginCode:
@@ -15899,7 +15907,7 @@ components:
                 description: Le type de service associé au produit PetroTrak.
                 maxLength: 50
               discountRate:
-                $ref: '#/components/schemas/percentage'
+                $ref: '#/components/schemas/highPrecisionPercentage'
               discountRateValue:
                 nullable: true
                 description: La valeur du taux de remise associée au produit PetroTrak.
@@ -15973,19 +15981,19 @@ components:
               required:
                 - unitPrice
             nonDomesticSettlementFee:
-              $ref: '#/components/schemas/percentage'
+              $ref: '#/components/schemas/highPrecisionPercentage'
             visaBusinessToBusinessVirtualForeignFee:
-              $ref: '#/components/schemas/percentage'
+              $ref: '#/components/schemas/highPrecisionPercentage'
             visaBusinessToBusinessVirtualForeignSingleCurrencyFee:
-              $ref: '#/components/schemas/percentage'
+              $ref: '#/components/schemas/highPrecisionPercentage'
             visaBusinessToBusinessAssessmentForeignSingleCurrencyFee:
-              $ref: '#/components/schemas/percentage'
+              $ref: '#/components/schemas/highPrecisionPercentage'
             visaBusinessToBusinessAssessmentForeignFee:
-              $ref: '#/components/schemas/percentage'
+              $ref: '#/components/schemas/highPrecisionPercentage'
             visaAssessmentSingleCurrencyFee:
-              $ref: '#/components/schemas/percentage'
+              $ref: '#/components/schemas/highPrecisionPercentage'
             visaAssessmentForeignFee:
-              $ref: '#/components/schemas/percentage'
+              $ref: '#/components/schemas/highPrecisionPercentage'
         packageIdentifier:
           type: string
           description: Un identifiant unique pour le forfait de tarification multi-devises.
@@ -18113,9 +18121,9 @@ components:
       nullable: true
       properties:
         monerisVisaInstallmentsFee:
-          $ref: '#/components/schemas/percentage'
+          $ref: '#/components/schemas/highPrecisionPercentage'
         visaInstallmentsAccessFee:
-          $ref: '#/components/schemas/percentage'
+          $ref: '#/components/schemas/highPrecisionPercentage'
     wix:
       type: object
       description: Contient des détails sur la configuration Wix et les informations sur le forfait.
@@ -18578,7 +18586,7 @@ components:
               required:
                 - unitPrice
             batchProcessingFee:
-              description: Indique si des frais s'appliquent aux services de traitement par lots.
+              description: Indique si des frais s'appliquent aux services de traitement par lots. Lors de la commande du traitement par lots, ce champ doit être envoyé sous la forme de 1000 cents (10 $).
               nullable: true
               type: object
               properties:
@@ -19070,53 +19078,9 @@ components:
               required:
                 - unitPrice
             transactionFee:
-              description: Frais appliqués par transaction individuelle traitée.
-              type: number
-              format: decimal
-              minimum: 0
-              maximum: 100
-              example: 90.5
-            monthlyFee:
-              description: Frais récurrents facturés mensuellement pour l'accès continu.
-              nullable: true
-              type: object
-              properties:
-                feeType:
-                  $ref: '#/components/schemas/feeType'
-                unitPrice:
-                  $ref: '#/components/schemas/money'
-                taxes:
-                  type: array
-                  description: A list of tax items associated with the fee.
-                  items:
-                    $ref: '#/components/schemas/tax'
-                  maxItems: 10
-                frequency:
-                  description: La fréquence à laquelle la taxe est appliquée, telle que mensuelle ou annuelle.
-                  type: string
-                  nullable: true
-                  maxLength: 20
-                  enum:
-                    - DAILY
-                    - WEEKLY
-                    - MONTHLY
-                    - QUARTERLY
-                    - ONE_OFF
-                    - SEMIANNUALLY
-                    - ANNUALLY
-                quantity:
-                  type: integer
-                  description: Représente le nombre de fois qu'une taxe est appliquée en fonction de sa fréquence.
-                  format: int32
-                  minimum: 1
-                  maximum: 30
-                  example: 3
-                isApproved:
-                  $ref: '#/components/schemas/isApproved'
-                waivePeriod:
-                  $ref: '#/components/schemas/waivePeriod'
-              required:
-                - unitPrice
+              description: Frais appliqués par transaction individuelle traitée. Prend en charge jusqu'à 6 décimales.
+              allOf:
+                - $ref: '#/components/schemas/percentage'
             boostMonthlyFee:
               description: Frais récurrents supplémentaires facturés mensuellement pour des services ou fonctionnalités améliorés.
               nullable: true
@@ -19241,12 +19205,9 @@ components:
               required:
                 - unitPrice
             eCommerceAssessmentTransactionFee:
-              description: Frais appliqués aux transactions évaluées pour le risque e-commerce.
-              type: number
-              format: decimal
-              minimum: 0
-              maximum: 100
-              example: 90.5
+              description: Les frais d'évaluation e-commerce Interac appliqués aux transactions e-commerce. Prend en charge jusqu'à 6 décimales.
+              allOf:
+                - $ref: '#/components/schemas/percentage'
             eCommerceCardBrandTransactionFee:
               description: Frais appliqués aux transactions e-commerce basés sur la marque de carte.
               nullable: true
@@ -19412,7 +19373,7 @@ components:
               required:
                 - unitPrice
             kountOneTimeFee:
-              description: Frais uniques facturés pour la configuration initiale ou l'activation de Kount.
+              description: Frais uniques facturés pour la configuration initiale ou l'activation de Kount. Lorsque kountPackage est « Kount - 200 Risk Inquiries » ou « Kount - 500 Risk Inquiries », cette valeur doit être 0.
               nullable: true
               type: object
               properties:
@@ -19494,47 +19455,21 @@ components:
               required:
                 - unitPrice
             visa3dSecureAuthenticationTransactionFee:
-              description: Frais appliqués aux transactions traitées en utilisant le protocole d'authentification 3D Secure de Visa.
-              type: number
-              format: decimal
-              minimum: 0
-              maximum: 100
-              example: 90.5
-            amex3dSecureAuthenticationTransactionFee:
-              description: Frais appliqués aux transactions traitées en utilisant le protocole d'authentification 3D Secure d'Amex.
-              type: number
-              format: decimal
-              minimum: 0
-              maximum: 100
-              example: 90.5
+              description: Frais appliqués aux transactions traitées en utilisant le protocole d'authentification 3D Secure de Visa. Prend en charge jusqu'à 6 décimales.
+              allOf:
+                - $ref: '#/components/schemas/percentage'
             mastercard3dSecureAuthenticationTransactionFee:
-              description: Frais appliqués aux transactions traitées en utilisant le protocole d'authentification 3D Secure de Mastercard.
-              type: number
-              format: decimal
-              minimum: 0
-              maximum: 100
-              example: 90.5
+              description: Frais appliqués aux transactions traitées en utilisant le protocole d'authentification 3D Secure de Mastercard. Prend en charge jusqu'à 6 décimales.
+              allOf:
+                - $ref: '#/components/schemas/percentage'
             visa3dSecureAuthenticationMerchantDiscountRateFee:
-              description: Le taux de remise marchand appliqué aux transactions traitées via le protocole d'authentification 3D Secure de Visa.
-              type: number
-              format: decimal
-              minimum: 0
-              maximum: 100
-              example: 90.5
-            amex3dSecureAuthenticationMerchantDiscountRateFee:
-              description: Le taux de remise marchand appliqué aux transactions traitées via le protocole d'authentification 3D Secure d'Amex.
-              type: number
-              format: decimal
-              minimum: 0
-              maximum: 100
-              example: 90.5
+              description: Le taux de remise marchand appliqué aux transactions traitées via le protocole d'authentification 3D Secure de Visa. Prend en charge jusqu'à 5 décimales.
+              allOf:
+                - $ref: '#/components/schemas/percentage'
             mastercard3dSecureAuthenticationMerchantDiscountRateFee:
-              description: Le taux de remise marchand appliqué aux transactions traitées via le protocole d'authentification 3D Secure de Mastercard.
-              type: number
-              format: decimal
-              minimum: 0
-              maximum: 100
-              example: 90.5
+              description: Le taux de remise marchand appliqué aux transactions traitées via le protocole d'authentification 3D Secure de Mastercard. Prend en charge jusqu'à 5 décimales.
+              allOf:
+                - $ref: '#/components/schemas/percentage'
         terminals:
           type: array
           description: Une liste de terminaux de paiement disponibles pour le produit intégré.
